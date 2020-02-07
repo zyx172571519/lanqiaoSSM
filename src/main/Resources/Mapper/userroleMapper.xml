@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.taru.dao.UserRoleDao">
+    <resultMap id="UserRoleDao" type="com.taru.model.UserRole">
+        <id column="USER_ROLE_ID" property="userRoleId" jdbcType="INTEGER"/>
+        <result column="USER_ID" property="userId" jdbcType="VARCHAR"/>
+        <result column="ROLE_ID" property="roleId" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--给用户角色表添加-->
+    <insert id="insertUserRole" useGeneratedKeys="true" keyProperty="userRoleId" parameterType="String">
+        insert into user_role(USER_ID,ROLE_ID)
+                    VALUES (#{userId},#{roleId})
+    </insert>
+
+
+</mapper>

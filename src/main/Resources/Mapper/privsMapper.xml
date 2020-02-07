@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.taru.dao.PrivsDao">
+    <resultMap id="PrivsDao" type="com.taru.model.Privs">
+        <id column="priv_father_id" property="privsId" jdbcType="INTEGER"/>
+        <result column="priv_father_name" property="privsName" jdbcType="VARCHAR"/>
+        <result column="PRIVS_FATHER_STATUS" property="privsStatus" jdbcType="VARCHAR"/>
+        <result column="PRIVS_FATHER_FATHER" property="privsFather" jdbcType="VARCHAR"/>
+        <collection property="privs" ofType="com.taru.model.Privs">
+            <id column="PRIVS_ID" property="privsId" jdbcType="VARCHAR"/>
+            <result column="PRIVS_NAME" property="privsName" jdbcType="VARCHAR"/>
+            <result column="PRIVS_STATUS" property="privsStatus" jdbcType="VARCHAR"/>
+            <result column="PRIVS_FATHER" property="privsFather" jdbcType="VARCHAR"/>
+        </collection>
+    </resultMap>
+
+    <resultMap id="PrivsDao1" type="com.taru.model.Privs">
+        <id column="PRIVS_ID" property="privsId" jdbcType="INTEGER"/>
+        <result column="PRIVS_NAME" property="privsName" jdbcType="VARCHAR"/>
+        <result column="PRIVS_STATUS" property="privsStatus" jdbcType="VARCHAR"/>
+        <result column="PRIVS_FATHER" property="privsFather" jdbcType="VARCHAR"/>
+        <result column="PRIVS_SON" property="privsSon" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询所有权限-->
+    <select id="queryAllPrivs" resultMap="PrivsDao1">
+        select PRIVS_ID,PRIVS_NAME,PRIVS_STATUS from privs
+    </select>
+
+    <!--查询树形菜单-->
+    <select id="treecaidan" resultMap="PrivsDao" parameterType="string">
+        select a.PRIVS_ID,a.PRIVS_NAME,	pf.PRIVS_ID as priv_father_id,
+	             pf.PRIVS_NAME as priv_father_name from  privs a
+                left  join  role_privs b on  a.PRIVS_ID=b.PRIVS_ID
+                left  join  role c on  b.ROLE_ID=c.ROLE_ID
+                left  join  user_role d on  c.ROLE_ID=d.ROLE_ID
+                left  join  user e on  d.USER_ID=e.USER_ID
+                left  join  privs pf on a.PRIVS_FATHER=pf.PRIVS_ID
+                where e.USER_ID=#{userId,jdbcType=VARCHAR} and a.PRIVS_FATHER is not null and a.PRIVS_SON=1
+    </select>
+
+    <!--添加权限-->
+    <insert id="insertPrivsOne" useGeneratedKeys="true" keyProperty="privsId" parameterType="string">
+        insert into privs(PRIVS_NAME,PRIVS_STATUS,PRIVS_FATHER,PRIVS_SON)
+                    values (#{privsName},1,#{privsFather},#{privsSon})
+    </insert>
+
+    <!--根据角色id查询角色权限-->
+    <select id="queryPrivsByRoleId" parameterType="string" resultMap="PrivsDao1">
+        select pri.PRIVS_ID,pri.PRIVS_NAME,pri.PRIVS_STATUS from privs as pri
+                left join role_privs as rp on pri.PRIVS_ID=rp.PRIVS_ID
+                left join role as ro on rp.ROLE_ID=ro.ROLE_ID
+                where ro.ROLE_ID=#{roleId,jdbcType=VARCHAR}
+    </select>
+
+
+
+</mapper>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.taru.dao.RoleDao">
+    <resultMap id="RoleMapper" type="com.taru.model.Role">
+        <id column="ROLE_ID" property="roleId" jdbcType="INTEGER"/>
+        <result column="ROLE_NAME" property="roleName" jdbcType="VARCHAR"/>
+        <result column="ROLE_STATUS" property="roleStatus" jdbcType="VARCHAR"/>
+    </resultMap>
+    <sql id="Role">
+        ROLE_ID,ROLE_NAME,ROLE_STATUS
+    </sql>
+
+    <!--查询所有角色-->
+    <select id="queryAllRole" resultMap="RoleMapper">
+          select
+                <include refid="Role"/>
+                from role
+    </select>
+
+    <!--添加角色-->
+    <insert id="insertRoleOne" useGeneratedKeys="true" keyProperty="userId" parameterType="string">
+          insert into role(ROLE_NAME,ROLE_STATUS)
+                      values(#{roleName},1)
+    </insert>
+
+
+</mapper>
